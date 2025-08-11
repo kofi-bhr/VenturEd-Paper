@@ -1,0 +1,90 @@
+
+% =============================================================================
+% MASTER FILE: Invisible Sets Paper
+% This file loads all packages and combines the modular sections into a single
+% document. Do not add content here directly. Edit the files in /sections.
+% =============================================================================
+
+% --- DOCUMENT CLASS ---
+\documentclass[12pt, letterpaper]{article}
+
+% --- PACKAGES ---
+\usepackage[margin=1in]{geometry}   % Page margins
+\usepackage{amsmath, amssymb, amsthm} % Core math packages
+\usepackage{mathtools}              % Advanced math tools
+\usepackage{booktabs}               % For professional-looking tables
+\usepackage{graphicx}               % For including figures (\includegraphics)
+\usepackage[hyphens]{url}           % Better URL handling
+\usepackage{natbib}                 % For author-year citations
+\bibliographystyle{apalike}         % Citation style (e.g., Author, Year)
+\usepackage[
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+]{hyperref}                         % Clickable links and references
+
+% --- CUSTOM MATH ENVIRONMENTS ---
+% Use these environments for formal statements (e.g., \begin{theorem}...\end{theorem})
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+\newtheorem{assumption}{Assumption}
+
+% --- CUSTOM MATH COMMANDS ---
+% Use these commands to ensure consistent notation throughout the paper.
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\C}{\mathcal{C}}
+\newcommand{\Z}{\mathcal{Z}}
+\newcommand{\G}{\mathcal{G}}
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\indep}{\perp\!\!\!\perp}
+
+% --- METADATA ---
+\title{Invisible Sets: A Model of Latent Opportunity and Partial Identification}
+\author{The VenturEd Research Collaborative \\ \small Kofi Hair-Ralston (Project Lead)}
+\date{\today}
+
+% =============================================================================
+% --- DOCUMENT BEGINS ---
+% =============================================================================
+\begin{document}
+
+\maketitle
+
+% --- ABSTRACT ---
+\begin{abstract}
+    \input{sections/00_abstract.tex}
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+% --- MAIN PAPER SECTIONS ---
+\input{sections/01_introduction.tex}
+\input{sections/02_lit_review.tex}
+\input{sections/03_theory.tex}
+\input{sections/04_simulation.tex}
+\input{sections/05_policy.tex}
+\input{sections/06_conclusion.tex}
+
+% --- BIBLIOGRAPHY ---
+% This command generates the "References" section from references.bib
+\newpage
+\bibliography{references}
+
+% --- APPENDIX ---
+% All supplementary material goes after this command.
+\newpage
+\appendix
+\input{sections/07_appendix.tex}
+
+\end{document}

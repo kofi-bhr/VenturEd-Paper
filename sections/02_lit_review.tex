@@ -1,0 +1,43 @@
+% =============================================================================
+% FILE: /sections/02_lit_review.tex
+% PURPOSE: To situate our paper within existing academic conversations.
+% Written by the Literature & Context team.
+% The goal is not just to summarize papers, but to build an argument
+% that leads to the conclusion: "Therefore, our research question is important
+% and has not yet been fully addressed."
+% =============================================================================
+\section{Literature Review}\label{sec:lit_review}
+
+% --- INTRODUCTION TO THE LITERATURE REVIEW ---
+% Start with a paragraph that frames the different bodies of literature we will
+% connect. e.g., "Our work builds on three distinct but related streams of
+% research: the econometric theory of partial identification, the economic
+% modeling of choice with unobserved constraints, and the sociological study
+% of access and opportunity."
+
+\subsection{Partial Identification and Treatment Effect Bounds}
+% This subsection covers the core econometric methodology.
+% Start with the foundational work.
+The challenge of making inferences with incomplete data is a long-standing problem in econometrics. The issue of sample selection bias, famously formalized by \citet{Heckman1979}, highlights how non-random selection into a sample can lead to biased estimates.
+% Introduce the key figure and concept for our paper.
+Our paper directly builds on the partial identification framework pioneered by Charles Manski. Rather than making strong, untestable assumptions to achieve a single point estimate, this approach asks what can be learned under weaker, more credible assumptions. \citet{Manski2003} provides the foundational textbook treatment, showing how to derive "bounds," or a range of possible values, for a parameter of interest.
+% Connect it to our specific problem.
+In our context, the latent nature of choice sets is a form of missing data that makes the Average Treatment Effect (ATE) unidentified. The methods of partial identification are therefore the natural tool to formally characterize the extent of our uncertainty.
+
+\subsection{Choice Models with Unobserved Constraints}
+% This subsection covers the economic theory of how people make choices.
+% Discuss the standard models and then introduce the complication we care about.
+Standard models of discrete choice, such as the multinomial logit, often assume that all decision-makers face the same set of possible alternatives. However, a growing literature recognizes that individuals often choose from "consideration sets" that are a strict subset of the full universe of options \citep{ExamplePaperOnConsiderationSets}.
+% Explain why this is relevant to our paper.
+These models provide a theoretical basis for our concept of "invisible sets." They formalize the idea that the first step in a choice process is the formation of a feasible set, which is itself a process worthy of study. Our contribution is to explicitly link the latent nature of these sets to the problem of causal inference and program evaluation.
+
+\subsection{Social Networks, Access, and Opportunity}
+% This subsection covers the sociological and economic evidence for why choice sets might differ systematically.
+% Start with a classic citation.
+The notion that economic opportunities are embedded in social structures is a cornerstone of economic sociology. \citet{Granovetter1973}'s work on "the strength of weak ties" demonstrated how novel information, such as job opportunities, often flows through distant acquaintances rather than close friends.
+% Connect this to our model's assumptions.
+This literature provides the real-world justification for Assumption 1 in our model: that choice set formation is not random but is systematically related to an individual's social position and group identity. Research on network homophily—the principle that individuals are more likely to be connected to similar peers—explains why access to certain opportunities can become clustered within specific demographic or socioeconomic groups. This provides a microfoundation for the mechanism we explore in Theorem \ref{thm:networks}.
+
+\subsection{Our Contribution}
+% This is the payoff. After reviewing the literature, state clearly what gap we are filling.
+While the literatures on partial identification, choice modeling, and social networks are each well-developed, they have rarely been formally integrated to address the problem of program evaluation under unequal access. Econometricians have derived bounds under abstract data assumptions, but have less often modeled the social origins of the identification problem itself. Sociologists have documented access inequality, but have not typically formalized its consequences for causal identification. Our paper bridges this gap. We use the tools of partial identification to explore the econometric consequences of a sociologically realistic model of opportunity access, thereby providing a formal foundation for understanding how inequality of access becomes inequality of evidence.
