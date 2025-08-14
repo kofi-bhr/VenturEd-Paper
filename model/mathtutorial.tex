@@ -1,0 +1,551 @@
+\documentclass{article}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{enumerate}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+% tcolorbox styling!
+\usepackage[most]{tcolorbox}
+\tcbset{mycommentbox/.style={ % our new style for small comments!
+    colback=gray!10!white,      % light gray background for the text area
+    colframe=black,             % black frame around the box
+    rounded corners,            % nice rounded corners!
+    arc=3mm, outer arc=3mm,     % how much to round the corners
+    boxrule=1pt,                % thin black border
+    drop shadow,                % subtle shadow to make it pop
+    fonttitle=\bfseries,        % bold title font
+    coltitle=white,             % white text for the title
+    colbacktitle=black,         % black background for the title bar
+    enlarge top by=1mm,         % give a little more space at the top
+    enlarge bottom by=1mm,      % and at the bottom
+    top=1mm, bottom=1mm,        % slight inner padding
+    left=2mm, right=2mm         % slight inner padding
+}}
+
+% Theorem environments
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+\newtheorem{assumption}{Assumption}
+
+% Custom commands
+\newcommand{\E}{\mathbb{E}}
+\renewcommand{\Pr}{\mathbb{P}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\C}{\mathcal{C}}
+\newcommand{\G}{\mathcal{G}}
+\newcommand{\F}{\mathcal{F}}
+\newcommand{\indep}{\perp\!\!\!\perp}
+
+\title{Invisible Sets: Mathematical Framework}
+\author{kofi}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Math Primer!}
+Hey everyone! Before we get into the paper's specifics, let's quickly make sure we're all on the same page with some fundamental math ideas. Economics has a ton of scary-looking symbols and syntax, but it's wayyy simpler than it seems :)
+
+\subsection*{1. Sets: Collections of Stuff}
+\begin{itemize}
+
+    \item You already know sets from pre-calc! A set is just a collection of distinct objects.
+    
+    \item $i \in \{1, 2, \ldots, N\}$: This means ``$i$ is one of the $N$ individuals in our population."
+    
+    \item $C_i \subseteq \X$: This means "$C_i$ is a subset of $\X$." If $\X$ is all possible choices (like every food item in the world), then $C_i$ is a smaller collection (like the menu at a specific restaurant). So, an individual's \textbf{choice set} is just a smaller list of things they can actually pick from.
+    
+    \begin{tcolorbox}[mycommentbox,title=language]
+    a `subset' is a suboordinate (i.e., ``under``) set; that is, a set within a set.
+    \end{tcolorbox}
+    
+    \item $2^N$: This notation means ``the power set of $N$." It's the set of \textbf{all possible subsets} of $N$. For this paper, it means ``all possible social networks." Don't worry about it too much beyond that :)
+    
+\end{itemize}
+
+\subsection*{2. Probability: Chance of Something Happening}
+\label{sec:probability_intro}
+\begin{itemize}
+
+    \item We write $\Pr(\text{event})$ to mean ``the probability of some event happening." It's always a number between 0 and 1 (or 0\% and 100\%).
+    
+    \item Example: ``$\Pr(\text{rain}) = 0.3$" means there's a 30\% chance of rain.
+    
+    \item $\Pr((i,j) \in \text{Network})$: This means ``the probability that individual $i$ and individual $j$ are connected in the social network."
+    
+    \begin{tcolorbox}[mycommentbox,title=mathematical symbols]
+    \textbf{some of the symbold you might see:}
+    \begin{itemize}
+        \item $\in$ : ``is an element of" (e.g., $x \in X$ means x is in the set X)
+        \item $\subseteq$ : ``is a subset of" (e.g., $A \subseteq B$ means every element in A is also in B)
+        \item $\cup$ : ``union" (e.g., $A \cup B$ is all elements in either A or B)
+        \item $\cap$ : ``intersection" (e.g., $A \cap B$ is all elements in both A and B)
+        \item $|$ : ``such that" or ``given that" in probability (e.g., $P(A|B)$ is probability of A given B)
+    \end{itemize}
+    \end{tcolorbox}
+    
+    \item $\Pr(T \in C_i | Z_i, g_i)$: Now this one has a pipe `$|$' in it! That means ``conditional probability." It's ``the probability that treatment option $T$ is available to individual $i$, \textit{given} their observable characteristics $Z_i$ and group membership $g_i$." Think of it as: ``What's the chance of this happening, \textit{  if we already know this other thing is true}?"
+    
+\end{itemize}
+
+\subsection*{3. Expected Value ($\E$): The Average Outcome}
+\begin{itemize}
+    \item Think of $\E$ as the ``average'' or ``long-run average'' of something.
+    \item If you flip a fair coin, the probability of heads is 0.5. If you assign ``1'' to heads and ``0'' to tails, the expected value of a flip is $\E[\text{outcome}] = 0.5 \times 1 + 0.5 \times 0 = 0.5$. It's the weighted average of all possible outcomes, where the weights are their probabilities.
+    \item $\E[y_i(1) - y_i(0)]$: This is really important in the paper! It means ``the average difference in outcome if an individual \textit{could} choose treatment 1 versus \textit{could} choose treatment 0.'' We'll get deeper into ``potential outcomes'' later, but for now, just think average difference!
+    \item $\E[y_i | x_i = 1, Z_i = z, g_i = g]$: This is the ``average outcome $y_i$'', \textit{given that} individual $i$ chose $x_i=1$, \textit{and given that} their characteristics are $Z_i=z$ and $g_i=g$."
+\end{itemize}
+
+\subsection*{4. Argmax: Finding the Best}
+\begin{itemize}
+    \item $x_i = \arg\max_{x \in C_i} u_i(x, Z_i, \eta_i)$: This looks scary, but it's just telling us \textit{how} someone makes a choice. It means: ``$x_i$ is the specific choice $x$ (from the set of available choices $C_i$) that maximizes (gives the highest value to) the utility function $u_i$."
+
+    \item Think of it like picking the tastiest item on a menu. You look at all the available options ($C_i$), consider what you like ($u_i$), and pick the one that gives you the most happiness (maximizes utility).
+
+    \item In this paper, we assume "deterministic choice with strict preferences," which just means that for any given person, their utility function will always point to one unique, absolutely best choice from their available options. No ties or randomness in their decision making!
+\end{itemize}
+
+\subsection*{5. Summation ($\sum$)}
+\begin{itemize}
+    \item $\sum_{z,g}$: This is the capital Greek letter sigma\footnote{...nvm}, which means ``sum." If you see $\sum_{k=1}^N f(k)$, it means add up $f(1) + f(2) + \ldots + f(N)$.
+
+    \item $\sum_{z,g} \lambda_{z,g} \E[\ldots]$: This means we're adding up the expected values for each combination of $z$ (observable characteristics) and $g$ (group membership), weighted by $\lambda_{z,g}$ (which is the proportion of people in the population that have those specific $z$ and $g$ characteristics). It's like calculating a total average by taking the average for each subgroup and then weighting them by how big each subgroup is.
+\end{itemize}
+
+\subsection*{6. Inequalities}
+\begin{itemize}
+    \item $\geq$ (greater than or equal to) and $\leq$ (less than or equal to). You know these!
+    \item $\tau \in [\tau_L, \tau_U]$: This means "tau is in the interval from $\tau_L$ to $\tau_U$." So, tau is somewhere between $\tau_L$ and $\tau_U$, inclusive.
+\end{itemize}
+
+\subsection*{7. Functions}
+\begin{itemize}
+    \item $f: X \to Y$: Means "$f$ is a function that takes inputs from set $X$ and produces outputs in set $Y$."
+    \item $u_i: \X \times \mathcal{Z} \times \mathcal{H} \to \R$: This means the utility function $u_i$ takes three inputs (a choice $x$, observable characteristics $Z_i$, and unobserved heterogeneity $\eta_i$) and outputs a real number ($\R$), which is the utility value. This is aptly called the ``utility function.''
+    \item $f(x_i, Z_i, \varepsilon_i)$: A function that takes choices, observables, and random shocks to produce an outcome $y_i$.
+    \item $\Gamma(Z_i, g_i, \mathcal{N}_i, \eta_i)$: The function that determines someone's choice set based on their characteristics, group, network, and unobserved stuff.
+    \item $h(\|Z_i - Z_j\|, |g_i - g_j|)$: A function $h$ that takes distances in characteristics and group membership as inputs. The `$||$ ... $||$' and `$|$ ... $|$' are for ``distance'' or ``absolute difference.''
+\end{itemize}
+
+\subsection*{8. Derivatives and Integrals (Briefly, for One Section!)}
+\begin{itemize}
+    \item $\frac{\partial}{\partial x} f(x,y)$: This is a ``partial derivative." If you have a function with multiple variables (like $f(x,y)$), a partial derivative tells you how $f$ changes \textit{only when $x$ changes}, assuming $y$ stays constant. It's the slope of the function in one specific direction. Don't worry too much about calculating these, just know what they mean!
+    \item $\int f(x) dx$: This is an ``integral." It's essentially finding the ``area under the curve" of a function. It's used to ``sum up" values for continuous variables, like our $z$ and $g$ if they weren't discrete categories. Again, don't worry about calculating, just the concept.
+\end{itemize}
+
+Phew! You've got the basic math vocabulary now. Let's get into the paper! :)
+
+
+
+
+
+
+% paper stuff :)
+
+\section{Model Setup}
+\subsection{Basic Environment}
+
+\begin{definition}[Choice Environment]
+We consider a population of $N$ individuals indexed by $i \in \{1, 2, \ldots, N\}$. Each individual is characterized by:
+\begin{itemize}
+    \item Observable characteristics $Z_i \in \mathcal{Z}$ (what we can see, like age or income)
+    \item Group membership $g_i \in \G = \{1, 2, \ldots, G\}$ (like 'student' or 'faculty')
+    \item Latent choice set $C_i \subseteq \X$ where $\X$ is the universe of possible choices (the hidden list of options available to person $i$)
+    \item Unobserved heterogeneity $\eta_i \in \mathcal{H}$ (hidden personal quirks, tastes, etc.)
+\end{itemize}
+\end{definition}
+
+\begin{definition}[Choice Behavior]
+Individual $i$ chooses $x_i \in C_i$ to maximize utility:
+\begin{equation}
+x_i = \arg\max_{x \in C_i} u_i(x, Z_i, \eta_i) % This means person $i$ picks the option $x_i$ from their available choices $C_i$ that gives them the highest utility ($u_i$).
+\end{equation}
+where $u_i: \X \times \mathcal{Z} \times \mathcal{H} \to \R$ is the utility function.
+\end{definition}
+
+For simplicity, we assume deterministic choice with strict preferences, so the argmax is unique.
+
+\begin{definition}[Outcomes]
+Individual $i$ realizes outcome $y_i$ according to:
+\begin{equation}
+y_i = f(x_i, Z_i, \varepsilon_i) % The outcome $y_i$ depends on their choice $x_i$, observable traits $Z_i$, and random luck $\varepsilon_i$.
+\end{equation}
+where $\varepsilon_i$ is an unobserved shock independent of all other variables.
+\end{definition}
+
+\begin{tcolorbox}[mycommentbox,title=key takeaway]
+People choose from a hidden set of options ($C_i$) to get the best outcome for themselves ($u_i$). We, the researchers, don't get to see their $C_i$, $u_i$, $\eta_i$, or $\varepsilon_i$. This hidden info is the root of the problem! :)
+\end{tcolorbox}
+
+
+
+
+\subsection{Choice Set Formation}
+
+\begin{assumption}[Choice Set Structure]
+\label{ass:choiceset}
+Choice sets are determined by:
+\begin{equation}
+C_i = \Gamma(Z_i, g_i, \mathcal{N}_i, \eta_i) % Your choice set is a recipe that depends on your observable traits ($Z_i$), your group ($g_i$), who you know ($\mathcal{N}_i$), and your hidden quirks ($\eta_i$).
+\end{equation}
+where $\mathcal{N}_i$ represents individual $i$'s social network and $\Gamma: \mathcal{Z} \times \G \times 2^N \times \mathcal{H} \to 2^\X$ is the choice set formation function.
+\end{assumption}
+
+\begin{assumption}[Network Homophily]
+\label{ass:homophily}
+The probability that individuals $i$ and $j$ are connected decreases in their distance:
+\begin{equation}
+\Pr((i,j) \in \text{Network}) = h(\|Z_i - Z_j\|, |g_i - g_j|) % The chance of being connected goes down as people become more "different" in their observable characteristics ($Z$) or group ($g$).
+\end{equation}
+where $h$ is decreasing in both arguments.
+\end{assumption}
+
+\subsection{Researcher's Problem}
+
+The researcher observes data $\{(x_i, y_i, Z_i, g_i)\}_{i=1}^N$ but does not observe $\{C_i, \eta_i, \varepsilon_i\}_{i=1}^N$.
+
+\begin{definition}[Treatment Effect of Interest]
+For a binary treatment $T \in \{0,1\} \subset \X$, the average treatment effect is:
+\begin{equation}
+\tau = \E[y_i(1) - y_i(0)] % This is our target: the average difference in outcome if everyone took treatment 1 versus treatment 0.
+\end{equation}
+where $y_i(t)$ is the potential outcome when individual $i$ chooses treatment level $t$.
+\end{definition}
+
+\begin{definition}[Identification]
+The treatment effect $\tau$ is \textit{identified} if there exists a unique value $\tau^*$ such that for all data generating processes consistent with the observed data, $\tau = \tau^*$.
+\end{definition}
+
+\begin{tcolorbox}[mycommentbox,title=understanding identification]
+Can we calculate $\tau$ exactly from the data we can see? If yes, it's identified. If no (because different ``hidden truths" could lead to the same data), it's not! Think of it like trying to find the individual prices of apples and bananas if you only ever see the total bill. If there are multiple combinations of prices that give the same total, you can't uniquely identify the individual prices.
+\end{tcolorbox}
+
+\section{Main Theoretical Results}
+
+\subsection{Non-Identification Result}
+
+\begin{theorem}[Non-Identification of Treatment Effects]
+\label{thm:nonid}
+When choice sets $\{C_i\}_{i=1}^N$ are unobserved and vary across individuals, the treatment effect $\tau$ is not identified, even with infinite data. % This is a big challenge: even with all the data in the world, if you don't know what options people had, you can't pinpoint the exact effect.
+\end{theorem}
+
+\begin{proof}
+We construct two data generating processes (DGPs) that produce identical observable data but have different treatment effects.
+
+\textbf{Construction:} Consider two individuals with identical observables $(Z_1, g_1) = (Z_2, g_2) = (z, g)$ but different choice sets:
+\begin{align}
+C_1 &= \{0, 1\} \quad \text{(full choice set)} \\
+C_2 &= \{1\} \quad \text{(restricted choice set)}
+\end{align}
+\textit{Parallel:} Two students with identical grades and high school (same $Z,g$). Student 1 can apply to any college ($C_1$). Student 2 can only apply to one specific local college ($C_2$).
+
+\textbf{DGP 1:} Assume utility functions such that:
+\begin{align}
+u_1(1, z, \eta_1) &> u_1(0, z, \eta_1) \quad \Rightarrow x_1 = 1 \\
+u_2(1, z, \eta_2) &> u_2(0, z, \eta_2) \quad \Rightarrow x_2 = 1
+\end{align}
+In this ``true world," both individuals chose treatment 1, and crucially, even if person 2 could have chosen 0, they would have preferred 1.
+Both individuals choose treatment, with potential outcomes:
+\begin{align}
+y_1(0) = 0, \quad y_1(1) &= 1 \quad \Rightarrow \tau_1 = 1 \\
+y_2(0) = 0, \quad y_2(1) &= 1 \quad \Rightarrow \tau_2 = 1
+\end{align}
+Average treatment effect: $\tau^{(1)} = 1$.
+
+\textbf{DGP 2:} Same choice behavior but different potential outcomes:
+\begin{align}
+y_1(0) = 0, \quad y_1(1) &= 1 \quad \Rightarrow \tau_1 = 1 \\
+y_2(0) = 1, \quad y_2(1) &= 1 \quad \Rightarrow \tau_2 = 0
+\end{align}
+Here, person 2 chose 1 (because it was their only option), but if they could have chosen 0, their outcome would have been the same. So, for them, the treatment had no effect ($\tau_2=0$).
+Average treatment effect: $\tau^{(2)} = 0.5$.
+
+\textbf{Observable Equivalence:} In both DGPs, we observe $(x_1, y_1) = (1, 1)$ and $(x_2, y_2) = (1, 1)$ with identical $(Z_i, g_i)$. The observed data distributions are identical.
+\textbf{Different Treatment Effects:} $\tau^{(1)} = 1 \neq 0.5 = \tau^{(2)}$.
+
+Since two different treatment effects are consistent with the same observed data, $\tau$ is not identified.
+\end{proof}
+
+\begin{tcolorbox}[mycommentbox,title=why non-identification is a big deal]
+This theorem is the heart of the paper. It says that when people have different options that we can't see, it's fundamentally impossible to figure out the true average impact of a `treatment'. Why? Because we don't know if someone chose something because they preferred it (true effect) or if it was their only option (selection bias). The outcomes might look the same, but the reasons for the choices (and thus the true effect) are different!
+\end{tcolorbox}
+
+\subsection{Sharp Bounds Result}
+
+\begin{theorem}[Sharp Bounds Under Minimal Assumptions]
+\label{thm:bounds}
+Under Assumptions \ref{ass:choiceset} and the following restrictions:
+\begin{enumerate}[(i)]
+    \item \textit{Support condition:} $\Pr(T \in C_i | Z_i, g_i) \in [\underline{p}(Z_i, g_i), \overline{p}(Z_i, g_i)]$ % The probability of having the treatment option is between a known lower ($\underline{p}$) and upper ($\overline{p}$) bound for each group.
+    \item \textit{Monotonic treatment response:} $y_i(1) \geq y_i(0)$ for all $i$ % Taking the treatment never makes things worse.
+\end{enumerate}
+The treatment effect is bounded by:
+\begin{equation}
+\tau \in [\tau_L, \tau_U] % The true average effect $\tau$ lies somewhere in this range.
+\end{equation}
+where the bounds are given by:
+\begin{align}
+\tau_L &= \sum_{z,g} \lambda_{z,g} \left[ \underline{p}(z,g) \cdot \E[y_i | x_i = 1, Z_i = z, g_i = g] \right] \\
+\tau_U &= \sum_{z,g} \lambda_{z,g} \left[ \overline{p}(z,g) \cdot \E[y_i | x_i = 1, Z_i = z, g_i = g] \right]
+\end{align}
+and $\lambda_{z,g} = \Pr(Z_i = z, g_i = g)$. Moreover, these bounds are sharp.
+\end{theorem}
+
+\begin{proof}
+\textbf{Step 1: Decomposition of Treatment Effect}
+The average treatment effect can be written as:
+\begin{align}
+\tau &= \E[y_i(1) - y_i(0)] \\
+&= \sum_{z,g} \lambda_{z,g} \E[y_i(1) - y_i(0) | Z_i = z, g_i = g] % We break down the total average effect into weighted averages for each observable group.
+\end{align}
+
+\textbf{Step 2: Conditional Treatment Effect Bounds}
+For individuals with characteristics $(z,g)$, we can bound the conditional treatment effect. Under monotonicity, we assume for the lower bound that the treatment effect is minimal (e.g., $y_i(0)$ is close to $y_i(1)$ for those who chose treatment) and access is at $\underline{p}$. For the upper bound, we assume the treatment effect is maximal (e.g., $y_i(0)=0$) and access is at $\overline{p}$.
+
+\textbf{Step 3: Aggregation}
+Summing over all $(z,g)$ pairs weighted by population shares gives the stated bounds.
+
+\textbf{Step 4: Sharpness}
+The bounds are achieved by assuming the most restrictive or most permissive choice set structures consistent with observations.
+\end{proof}
+
+\begin{tcolorbox}[mycommentbox,title=bounds: getting a grip on uncertainty]
+If we can't know the exact answer, knowing the range of possible answers is the next best thing! This theorem tells us that with two reasonable assumptions (some knowledge of treatment availability and that treatment doesn't make things worse), we can calculate a range for our average treatment effect $\tau$.
+\end{tcolorbox}
+
+\subsection{Network Effects on Identification}
+
+\begin{theorem}[Homophily Worsens Identification]
+\label{thm:network}
+Under Assumptions \ref{ass:choiceset}-\ref{ass:homophily}, network homophily reduces the width of bounds $\tau_U - \tau_L$ achievable through variation in choice sets, thereby worsening identification. % If people only connect with similar people (homophily), it becomes harder to figure out the treatment effect, meaning a wider range of uncertainty.
+\end{theorem}
+
+\begin{proof}
+\textbf{Setup:} Consider a network where connection probability between $i$ and $j$ is:
+\begin{equation}
+p_{ij} = \exp(-\alpha \|Z_i - Z_j\| - \beta |g_i - g_j|) % Stronger $\alpha, \beta$ mean more homophily.
+\end{equation}
+
+\textbf{Step 1: Choice Set Correlation}
+As homophily increases ($\alpha, \beta \to \infty$), choice sets become perfectly correlated within groups:
+\begin{equation}
+\rho_{C}(z,g) \to 1 % If one person in a group has an option, everyone in that group probably does too.
+\end{equation}
+
+\textbf{Step 2: Variance Reduction}
+The variance in choice set access within group $(z,g)$ approaches zero as $\rho_C(z,g) \to 1$. This means choice sets become identical within groups (everyone has the option or no one does).
+
+\textbf{Step 3: Identification Impact}
+When choice sets are identical within groups, it becomes impossible to tell if someone chose something because they *wanted* it (true treatment effect) or because it was their *only option* (selection effect). This leads to wider, less useful bounds for $\tau$.
+
+\textbf{Step 4: Welfare Implications}
+Homophily leads to ``allocative inefficiency." Treatment isn't necessarily allocated to those who would benefit most, but rather to those connected in networks. This causes ``welfare loss."
+\end{proof}
+
+\begin{tcolorbox}[mycommentbox,title=homophily is bad for identification]
+``Birds of a feather flock together" actually makes our research job more interesting! If social circles are too segregated, people within a group will have very similar access to opportunities. This makes it tough to know if an observed good outcome is due to the treatment itself, or just because only the ``right'' people (who would succeed anyway) got access. This means more uncertainty in our estimates and potentially means good opportunities don't reach those who need them most.
+\end{tcolorbox}
+
+\section{Extensions and Robustness}
+
+\subsection{Dynamic Choice Sets}
+
+\begin{definition}[Dynamic Choice Set Formation]
+In period $t$, individual $i$'s choice set evolves according to:
+\begin{equation}
+C_{it} = \Gamma(Z_{it}, g_i, \mathcal{N}_{it}, C_{i,t-1}, x_{i,t-1}, \eta_{it}) % Your options today depend on your options yesterday and what you chose yesterday.
+\end{equation}
+where past choices $x_{i,t-1}$ and choice sets $C_{i,t-1}$ affect current opportunities.
+\end{definition}
+
+\begin{proposition}[Dynamic Identification]
+In the dynamic setting, treatment effects are not identified even under stronger assumptions about choice set formation, due to path dependence in opportunity access. % History matters! This makes the problem even harder.
+\end{proposition}
+
+\begin{proof}[Proof Sketch]
+Past choices affecting current choice sets create an additional layer of unobservable differences, compounding the static identification problem.
+\end{proof}
+
+\subsection{Continuous Treatment Intensity}
+
+\begin{definition}[Continuous Treatment]
+Let $\X = [0, \bar{x}]$ represent continuous treatment intensity (e.g., dosage of medicine), and choice sets be intervals $C_i = [0, c_i]$ where $c_i$ is the maximum treatment intensity available to individual $i$.
+\end{definition}
+
+\begin{proposition}[Continuous Treatment Bounds]
+Under continuous treatment with interval choice sets, the treatment effect bounds become:
+\begin{align}
+\tau_L &= \int \underline{c}(z,g) \cdot \frac{\partial}{\partial x} \E[y_i | x_i = x, Z_i = z, g_i = g]\Big|_{x=0} \, dF(z,g) \\
+\tau_U &= \int \overline{c}(z,g) \cdot \frac{\partial}{\partial x} \E[y_i | x_i = x, Z_i = z, g_i = g]\Big|_{x=0} \, dF(z,g)
+\end{align}
+where $\underline{c}(z,g)$ and $\overline{c}(z,g)$ are bounds on maximum available treatment intensity. % The core idea of bounding remains the same, just adapted for continuous values using integrals and derivatives.
+\end{proposition}
+
+\subsection{Welfare Analysis}
+
+\begin{definition}[Social Welfare]
+Define social welfare as:
+\begin{equation}
+W = \sum_{i=1}^N \E[y_i | C_i, Z_i, g_i] % The total average well-being across everyone, considering their options.
+\end{equation}
+\end{definition}
+
+\begin{proposition}[Optimal Information Provision]
+The social planner's problem is to choose information provision policy $\pi: \mathcal{Z} \times \G \to [0,1]$ that maximizes expected welfare subject to budget constraint $\sum_{z,g} \lambda_{z,g} \pi(z,g) \leq B$. % A theoretical "social planner" decides how much info to give each group to maximize overall well-being, given a budget.
+The optimal policy satisfies:
+\begin{equation}
+\pi^*(z,g) = \begin{cases}
+1 & \text{if } \frac{\partial W}{\partial \pi(z,g)} \geq \lambda \\
+0 & \text{if } \frac{\partial W}{\partial \pi(z,g)} < \lambda
+\end{cases}
+\end{equation}
+where $\lambda$ is the Lagrange multiplier on the budget constraint. % Provide full info (1) if the benefit to welfare is high enough, otherwise no info (0).
+\end{proposition}
+
+\section{Testable Implications}
+
+\subsection{Information Experiments}
+
+\begin{proposition}[Information Intervention Effects]
+If choice sets are constrained by information, then random information provision should increase treatment take-up. The magnitude of increase identifies the extent of information constraints.
+Formally, let $I_i \in \{0,1\}$ be a random information treatment. Then:
+\begin{equation}
+\E[x_i | I_i = 1, Z_i, g_i] - \E[x_i | I_i = 0, Z_i, g_i] = \Delta(Z_i, g_i)
+\end{equation}
+where $\Delta(Z_i, g_i) > 0$ indicates information constraints for group $(Z_i, g_i)$. % If giving info boosts choices ($\Delta > 0$), it means info was a barrier!
+\end{proposition}
+
+\subsection{Referral Pattern Tests}
+
+\begin{proposition}[Network Clustering Test]
+Under network-based choice set formation, treatment choices should exhibit excess clustering within demographic groups, conditional on observables. % If options come from networks, people in the same networks should make unusually similar choices.
+This can be tested using the statistic:
+\begin{equation}
+T_{cluster} = \frac{1}{N} \sum_{i=1}^N \sum_{j \in \mathcal{N}_i} |x_i - x_j| - \E[|x_i - x_j| | Z_i, Z_j, g_i, g_j] % This measures if choices are more similar among connected people than expected.
+\end{equation}
+where negative values indicate excess clustering consistent with network effects.
+\end{proposition}
+
+\subsection{Bounds Tightening}
+
+\begin{proposition}[Information Value]
+As researchers collect better data on choice set formation (through surveys, experiments, etc.), the bounds should tighten. This can be formalized as:
+\begin{equation}
+\tau_U(\mathcal{I}') - \tau_L(\mathcal{I}') \leq \tau_U(\mathcal{I}) - \tau_L(\mathcal{I}) % More information ($\mathcal{I}'$) leads to a smaller range of uncertainty ($\tau_U - \tau_L$).
+\end{equation}
+where $\mathcal{I} \subset \mathcal{I}'$ represents information sets about choice set formation.
+\end{proposition}
+
+\section{Computational Procedures}
+
+\subsection{Bounds Estimation Algorithm}
+
+\begin{enumerate}
+\item \textbf{Data Preparation:} Group your data by observable characteristics ($Z_i, g_i$).
+\item \textbf{Within-Group Analysis:} For each group:
+   \begin{enumerate}
+       \item Estimate the average outcome for those who chose the treatment ($\E[y_i | x_i = 1, \ldots]$).
+       \item Specify the lowest and highest likely probabilities of treatment access ($\underline{p}, \overline{p}$) for that group.
+   \end{enumerate}
+\item \textbf{Bounds Computation:} Plug these numbers into the formulas from Theorem \ref{thm:bounds} to get $\tau_L$ and $\tau_U$.
+\item \textbf{Confidence Intervals:} Use statistical methods (like bootstrapping) to estimate the uncertainty around your calculated bounds.
+\end{enumerate}
+
+\subsection{Network Effects Estimation}
+
+For network-based choice set formation:
+\begin{enumerate}
+\item \textbf{Network Construction:} Build a map of who is connected to whom.
+\item \textbf{Homophily Measurement:} Estimate how strongly people connect with similar others.
+\item \textbf{Choice Set Correlation:} See if people within the same groups (especially if connected) make similar choices.
+\item \textbf{Welfare Analysis:} Run computer simulations to see how different network structures might change overall welfare.
+\end{enumerate}
+
+\section{Conclusion}
+
+This mathematical framework provides a solid way to analyze problems when people's options are hidden. The key takeaways are:
+
+\begin{enumerate}
+\item \textbf{Non-identification result:} You can't pinpoint exact treatment effects when choice sets are hidden and vary.
+\item \textbf{Sharp bounds:} But you can find a useful range for the effect under certain assumptions.
+\item \textbf{Network effects:} Social connections can make it harder to identify effects and lead to worse overall outcomes.
+\item \textbf{Policy implications:} This framework helps design interventions, like providing better information or structuring platforms.
+\end{enumerate}
+
+The framework is flexible and can be applied to many areas (education, jobs, tech adoption) while also giving practical steps for researchers.
+
+\begin{tcolorbox}[mycommentbox,title=ready for action!]
+You've made it! You've walked through the entire paper, from basic definitions to deep theoretical results and practical applications. You're now armed with the mathematical understanding and terminology to tackle the core of this policy paper's mathematical section.
+
+Now, for some exercises to solidify your understanding. Don't worry, they're designed to help you think through the concepts, not stump you! :)
+\end{tcolorbox}
+
+\section*{Exercises to Get You Thinking! :)} % changed to regular section, not tcolorbox
+
+\subsection*{Exercise 1: Decoding the Language}
+\begin{enumerate}
+    \item  Explain in your own words what ``latent choice set $C_i$'' means. Give a real-world example not used in this guide. Why is it a problem that it's ``latent''?
+    \item  What does $\E[y_i(1) - y_i(0)]$ mean? Why is it called a ``treatment effect''?
+    \item  If a researcher states that a certain effect is ``not identified,'' what does that practically mean for their ability to draw conclusions?
+\end{enumerate}
+
+\subsection*{Exercise 2: Probability and Expected Value Warm-up}
+Let's say we have a tiny population of 3 individuals.
+\begin{itemize}
+    \item Individual 1: $Z_1 = \text{young}, g_1 = \text{student}$
+    \item Individual 2: $Z_2 = \text{old}, g_2 = \text{student}$
+    \item Individual 3: $Z_3 = \text{young}, g_3 = \text{faculty}$
+\end{itemize}
+The treatment $T$ is 'attending a workshop'. Outcomes $y_i$ are 1 (got a promotion) or 0 (didn't).
+\begin{enumerate}
+    \item  What are the values of $\lambda_{young, student}$, $\lambda_{old, student}$, and $\lambda_{young, faculty}$? (Hint: these are just population proportions!)
+    \item  Suppose you observe the following:
+        \begin{itemize}
+            \item Individual 1 attended the workshop ($x_1=1$) and got a promotion ($y_1=1$).
+            \item Individual 2 attended the workshop ($x_2=1$) and got a promotion ($y_2=1$).
+            \item Individual 3 did NOT attend the workshop ($x_3=0$) and did NOT get a promotion ($y_3=0$).
+        \end{itemize}
+        Calculate $\E[y_i | x_i = 1, Z_i = \text{young}, g_i = \text{student}]$ based on this tiny sample.
+    \item  If you somehow knew that for all 'young students', $\Pr(T \in C_i | Z_i=\text{young}, g_i=\text{student})$ was between 0.8 and 1.0 (meaning they almost always had the option), and for 'old students' it was between 0.1 and 0.2, and for 'young faculty' it was between 0.0 and 0.05, how would this information, combined with the assumption of monotonic treatment response, affect your ability to estimate the overall treatment effect? (No need to calculate exact bounds, just describe the intuition!)
+\end{enumerate}
+
+\subsection*{Exercise 3: Non-Identification in Action}
+Imagine you're studying the effect of owning a smartphone ($T=1$) versus not ($T=0$) on people's daily happiness ($y_i$). You observe two people:
+\begin{itemize}
+    \item Person A: owns a smartphone, very happy.
+    \item Person B: owns a smartphone, very happy.
+\end{itemize}
+You don't know their choice sets.
+\begin{enumerate}
+    \item  Can you construct two different ``true worlds'' (DGPs) that lead to these same observed outcomes but imply different average effects of smartphone ownership on happiness? (Hint: Think about what their hidden choice sets $C_i$ and potential outcomes $y_i(0), y_i(1)$ might be in each world).
+    \item  Why does the non-identification theorem hold even with ``infinite data'' in this smartphone example?
+\end{enumerate}
+
+\subsection*{Exercise 4: Homophily's Impact}
+You're studying a peer mentoring program in high schools.
+\begin{itemize}
+    \item Students are more likely to be friends with (and thus influenced by) other students in the same grade and with similar academic performance.
+    \item If a student's friends join the mentoring program, the student is more likely to join, and more likely to have access to the program.
+\end{itemize}
+\begin{enumerate}
+    \item  How does this situation demonstrate ```network homophily"?
+    \item  Based on Theorem \ref{thm:network}, how would this homophily affect your ability to identify the true effectiveness of the mentoring program on student grades? Explain intuitively.
+    \item  How might this homophily lead to "welfare loss" in the context of the mentoring program?
+\end{enumerate}
+
+\subsection*{Exercise 5: Policy Implications}
+Based on the paper's insights:
+\begin{enumerate}
+    \item  If a local government wants to increase participation in a recycling program, but suspects people don't know about collection points, what kind of ``information experiment" (as described in section 4.1) could they run? What would a successful outcome look like?
+    \item  Imagine a new online platform designed to connect job seekers with employers. How could the principles of network effects (section 2.3) and optimal information provision (section 3.3) guide the design of this platform to maximize social welfare (i.e., get more people into suitable jobs)?
+\end{enumerate}
+
+-kofi
+
+\end{document}

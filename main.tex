@@ -1,90 +1,436 @@
+\documentclass[11pt,letterpaper]{report}
 
-% =============================================================================
-% MASTER FILE: Invisible Sets Paper
-% This file loads all packages and combines the modular sections into a single
-% document. Do not add content here directly. Edit the files in /sections.
-% =============================================================================
+% Page layout
+\usepackage[top=1in,bottom=1in,left=1.25in,right=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 
-% --- DOCUMENT CLASS ---
-\documentclass[12pt, letterpaper]{article}
+% Font choices
+\usepackage{mathptmx} % Times New Roman-like font
+% Alternative: \usepackage{lmodern} for Latin Modern
+% Alternative: \usepackage{charter} for Charter font
 
-% --- PACKAGES ---
-\usepackage[margin=1in]{geometry}   % Page margins
-\usepackage{amsmath, amssymb, amsthm} % Core math packages
-\usepackage{mathtools}              % Advanced math tools
-\usepackage{booktabs}               % For professional-looking tables
-\usepackage{graphicx}               % For including figures (\includegraphics)
-\usepackage[hyphens]{url}           % Better URL handling
-\usepackage{natbib}                 % For author-year citations
-\bibliographystyle{apalike}         % Citation style (e.g., Author, Year)
-\usepackage[
-    colorlinks=true,
-    linkcolor=blue,
-    citecolor=blue,
-    urlcolor=blue
-]{hyperref}                         % Clickable links and references
+% Packages
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{bm} % Bold math symbols
+\usepackage{dsfont} % Double-struck fonts for sets
+\usepackage{mathrsfs} % Script fonts
+\usepackage{algorithm}
+\usepackage{algpseudocode} % For algorithms
+\usepackage{tikz} % For technical diagrams
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric}
 
-% --- CUSTOM MATH ENVIRONMENTS ---
-% Use these environments for formal statements (e.g., \begin{theorem}...\end{theorem})
-\newtheorem{theorem}{Theorem}
-\newtheorem{lemma}{Lemma}
-\newtheorem{proposition}{Proposition}
-\newtheorem{corollary}{Corollary}
-\newtheorem{definition}{Definition}
-\newtheorem{assumption}{Assumption}
-
-% --- CUSTOM MATH COMMANDS ---
-% Use these commands to ensure consistent notation throughout the paper.
-\newcommand{\E}{\mathbb{E}}
-\newcommand{\Var}{\mathrm{Var}}
-\newcommand{\Cov}{\mathrm{Cov}}
-\newcommand{\Prob}{\mathbb{P}}
+% Additional operators
+\DeclareMathOperator{\argmax}{arg\,max}
+\DeclareMathOperator{\argmin}{arg\,min}
+\DeclareMathOperator*{\minimize}{minimize}
+\DeclareMathOperator*{\maximize}{maximize}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\sign}{sign}
 \newcommand{\R}{\mathbb{R}}
-\newcommand{\X}{\mathcal{X}}
-\newcommand{\C}{\mathcal{C}}
-\newcommand{\Z}{\mathcal{Z}}
-\newcommand{\G}{\mathcal{G}}
-\newcommand{\N}{\mathcal{N}}
-\newcommand{\indep}{\perp\!\!\!\perp}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\indep}{\perp \!\!\! \perp}
 
-% --- METADATA ---
-\title{Invisible Sets: A Model of Latent Opportunity and Partial Identification}
-\author{The VenturEd Research Collaborative \\ \small Kofi Hair-Ralston (Project Lead)}
-\date{\today}
+% Theorem environments
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{assumption}{Assumption}[chapter]
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\let\rank\relax
+\usepackage{physics}
+\usepackage{mathtools}
+\usepackage{float}
+\usepackage{booktabs} % Professional tables
+\usepackage{longtable} % Tables spanning multiple pages
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{enumerate}
+\usepackage{enumitem} % Better list control
 
-% =============================================================================
-% --- DOCUMENT BEGINS ---
-% =============================================================================
+% For economic data and citations
+\usepackage{natbib}
+\setlength{\bibsep}{0.0pt}
+\usepackage{url}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=textgray,
+    filecolor=magenta,      
+    urlcolor=textgray,
+    citecolor=textgray
+}
+
+% Professional spacing
+\usepackage{setspace}
+\onehalfspacing
+
+% Custom colors - updated from CFR branding
+\definecolor{accent}{RGB}{31, 78, 121} % Deep blue accent
+\definecolor{lightaccent}{RGB}{46, 125, 83} % Green accent  
+\definecolor{textgray}{RGB}{88,89,91} % Gray text
+
+% Section formatting
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{accent}}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{accent}}{\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{accent}}{\thesubsection}{1em}{}
+
+% Custom theorem environments
+\newtheorem{finding}{Key Finding}[chapter]
+\newtheorem{recommendation}{Policy Recommendation}[chapter]
+\newtheorem{case}{Case Study}[chapter]
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[chapter]
+
+\theoremstyle{remark}
+\newtheorem{note}{Note}[chapter]
+\newtheorem{example}{Example}[chapter]
+
+% Configurable header text
+\newcommand{\headertext}[1]{\def\theheadertext{#1}}
+\newcommand{\headertitle}[1]{\def\theheadertitle{#1}}
+
+% Default header values
+\headertext{The Perrin Institution \& VenturEd}
+\headertitle{Invisible Sets: Policy Effectiveness Under Access Constraints}
+
+% Header/footer - modified for configurable top text and bottom page numbers
+\usepackage{microtype}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\setlength{\headheight}{14pt}
+\fancyhf{}
+\fancyhead[C]{\textls[100]{\small\scshape\color{textgray}\theheadertext}}
+\fancyfoot[C]{\color{textgray}\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Make chapter pages have the same header
+\fancypagestyle{plain}{\pagestyle{fancy}}
+% Title page style (no headers)
+\fancypagestyle{titlepage}{
+    \fancyhf{}
+    \renewcommand{\headrulewidth}{0pt}
+    \renewcommand{\footrulewidth}{0pt}
+}
+
+% Title page customization
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+
+% Custom commands
+\newcommand{\GDP}{\text{GDP}}
+\newcommand{\CPI}{\text{CPI}}
+\newcommand{\bias}{\beta}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\E}{\mathbb{E}}
+
+% Executive summary environment
+\newenvironment{executive}
+{\begin{quote}\itshape\color{accent}}
+{\end{quote}}
+
+% Policy box environment
+\usepackage{tcolorbox}
+\usepackage{lipsum}
+\newtcolorbox{policybox}[1][]{
+  colback=blue!5!white,
+  colframe=accent,
+  fonttitle=\bfseries,
+  title=Policy Implications,
+  #1
+}
+
 \begin{document}
 
-\maketitle
+% Custom title page
+\begin{titlepage}
+\thispagestyle{titlepage}
+\begin{center}
 
-% --- ABSTRACT ---
-\begin{abstract}
-    \input{sections/00_abstract.tex}
-\end{abstract}
+\vspace{1cm}
 
+{\large \textsuperscript{$\dag$}{The Perrin Institution} {in collaboration with} \textsuperscript{$\ast$}{VenturEd}}
+
+\vspace{3cm}
+
+% Report title
+{\huge\bfseries Invisible Sets: Measuring Policy Effectiveness with Variable Opportunity Sets}
+
+\vspace{1cm}
+
+
+\vspace{2cm}
+
+% Authors in preprint style - using footnotes for affiliations
+{\large
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+Kofi Hair-Ralston\thanks{VenturEd Global}, Shlok Jaiswal\thanks{The Perrin Institution}, Riya Dutta\footnotemark[2], Anisha Arvind\footnotemark[2], Anvitaa Rudharraju\footnotemark[2],\\
+Arvind Salem\footnotemark[2], Shreshtha Aggarwal\footnotemark[2], Aiyana Bage\footnotemark[2], Paritosh Bhole\footnotemark[2], Saathvik Valvekar\footnotemark[2],\\
+Olivia Liao\footnotemark[2], Sanjana Bellur\footnotemark[2], Chase Phua\footnotemark[2], Storey Kuo\footnotemark[2], Ayushmaan Mukherjee\footnotemark[2],\\
+Elias Eid\footnotemark[2], Mihika Sakharpe\footnotemark[2], Nathan Beck\footnotemark[2], Hansika Yakkala\footnotemark[2], Vihaan Nayak\footnotemark[2],\\
+Sid Bajaj\footnotemark[2], Natalie Nguyen\footnotemark[2]
+\renewcommand{\thefootnote}{\arabic{footnote}}
+}
+
+\vspace{1.5cm}
+
+% Affiliations are now handled by footnotes at the bottom of the page
+% The following block is no longer needed and can be removed or commented out.
+% {\footnotesize
+% \begin{flushleft}
+% \end{flushleft}
+% }
+
+\vspace{1cm}
+
+% Report metadata
+{\large Report Date:}\\
+{\large 2025}\\
+\vspace{0.3cm}
+
+\vfill
+
+% Footer disclaimer
+{\footnotesize\color{textgray}
+This report represents the views of the authors and does not necessarily reflect the official position of The Perrin Institution or VenturEd. All errors remain the responsibility of the authors.
+}
+
+\end{center}
+\end{titlepage}
+
+% New page for support acknowledgement
 \newpage
+\thispagestyle{empty}
+\vspace*{\fill} % Pushes content to the bottom
+{\footnotesize
+\begin{center}
+\textbf{Support:}\\
+This research was made possible by support from \\
+the Perrin Research Institution\\
+and VenturEd Global.\\[0.5cm]
+
+\textbf{VenturEd Global} is a nonprofit organization dedicated to providing\\
+first career opportunities to underrepresented talent in technology and finance.\\[0.5cm]
+
+\textbf{The Perrin Institution} is an independent, nonpartisan think tank\\
+dedicated to advancing evidence-based policy through rigorous analysis\\
+and innovative methodologies.
+\end{center}
+}
+\newpage
+
+% Table of Contents
 \tableofcontents
 \newpage
 
-% --- MAIN PAPER SECTIONS ---
-\input{sections/01_introduction.tex}
-\input{sections/02_lit_review.tex}
-\input{sections/03_theory.tex}
-\input{sections/04_simulation.tex}
-\input{sections/05_policy.tex}
-\input{sections/06_conclusion.tex}
+% Executive Summary
+\chapter*{Executive Summary}
+\addcontentsline{toc}{chapter}{Executive Summary}
+\lipsum[1-2]
 
-% --- BIBLIOGRAPHY ---
-% This command generates the "References" section from references.bib
-\newpage
+\begin{finding}[Key Finding Title]
+This is a key finding. \lipsum[3]
+\end{finding}
+
+\begin{recommendation}[Policy Recommendation Title]
+This is a policy recommendation. \lipsum[4]
+\end{recommendation}
+
+\chapter{Introduction and Scope}
+\lipsum[1]
+
+\section{The Central Problem}
+\lipsum[2-3]
+
+This is an example of an inline equation: $\alpha + \beta = \gamma$. Here is a citation \citep{Manski2003}.
+
+\begin{table}[h!]
+\centering
+\caption{This is a sample table.}
+\label{tab:sample_table}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Column 1 & Column 2 & Column 3 \\ \midrule
+Row 1 & 123 & 45.6 \\
+Row 2 & 789 & 10.1 \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\section{Mathematical Framework}
+\lipsum[4-5]
+Here is a complex equation demonstrating several mathematical concepts:
+\begin{align}
+    \mathcal{L}(\theta | \mathbf{X}) &= \prod_{i=1}^{N} f(x_i; \theta) \\
+    \nabla_\theta \log \mathcal{L}(\theta | \mathbf{X}) &= \sum_{i=1}^{N} \frac{\partial}{\partial \theta} \log f(x_i; \theta) = 0 \\
+    \int_{-\infty}^{\infty} e^{-x^2} dx &= \sqrt{\pi}
+\end{align}
+This equation shows a likelihood function, its gradient for maximum likelihood estimation, and the Gaussian integral. The term $\mathbb{E}[\log(P(X|\theta))]$ represents the expected log-likelihood.
+
+\chapter{The Architecture of Invisible Sets}
+\lipsum[1-2]
+
+\section{Information Constraints}
+\lipsum[3]
+
+\section{Network Effects and Homophily}
+\lipsum[4]
+\subsection{Network-Based Access Patterns}
+\lipsum[5]
+
+\chapter{Identification and Bounding Results}
+\lipsum[1]
+
+\section{The Impossibility Result}
+\lipsum[2]
+
+\section{Sharp Bounds Under Minimal Assumptions}
+\lipsum[3-4]
+
+\section{Empirical Bounding Strategy}
+\lipsum[5]
+Here is another equation with different notation:
+\begin{equation}
+    \Var(X) = \E[X^2] - (\E[X])^2
+\end{equation}
+And a citation to a different author \citep{Heckman2001}.
+
+\begin{policybox}[This is a tcolorbox heading]
+This is an example of a policy box using the `tcolorbox` environment. \lipsum[6]
+\end{policybox}
+
+\chapter{Policy Applications and Implications}
+\lipsum[1-2]
+
+\begin{case}[This is a Case Study Heading]
+This is a case study example. \lipsum[7-8]
+\end{case}
+
+\section{Rethinking Program Evaluation}
+\lipsum[1]
+
+\section{Platform Design for Equitable Access}
+\lipsum[2]
+
+\subsection{Information Provision Strategies}
+\lipsum[3]
+
+\subsection{Centralized vs. Decentralized Distribution}
+\lipsum[4]
+
+\section{Network-Based Interventions}
+\lipsum[5]
+
+\chapter{Empirical Evidence and Simulations}
+\lipsum[1-2]
+
+\section{Simulation Results}
+\lipsum[3-4]
+
+\section{Information Intervention Experiments}
+\lipsum[5-6]
+
+\chapter{Implementation Roadmap}
+\lipsum[1]
+
+\section{For Researchers}
+\begin{itemize}
+    \item \lipsum[1][1-2]
+    \item \lipsum[1][3-4]
+\end{itemize}
+
+\section{For Policymakers}
+\begin{itemize}
+    \item \lipsum[2][1-2]
+    \item \lipsum[2][3-4]
+\end{itemize}
+
+\section{For Organizations}
+\begin{itemize}
+    \item \lipsum[3][1-2]
+    \item \lipsum[3][3-4]
+\end{itemize}
+
+\chapter{Future Research Directions}
+\lipsum[1-2]
+
+\section{Choice Set Elicitation Methods}
+\lipsum[3]
+
+\section{Network Mapping and Intervention}
+\lipsum[4]
+
+\section{Platform Design for Equity}
+\lipsum[5]
+
+\chapter{Conclusion}
+\lipsum[1-3]
+
+\section*{Closing Statement from VenturEd}
+
+\begin{quote}
+\textit{``This research exemplifies why diverse perspectives are essential for solving complex social problems. At VenturEd, we see daily how talented individuals from underrepresented backgrounds face constrained opportunity sets not because of lack of ability or motivation, but because of information barriers, network gaps, and access constraints.}
+
+\textit{The invisible sets framework provides a rigorous foundation for what we've observed empirically: that traditional approaches to measuring program effectiveness miss the fundamental role of differential access. Our partnerships with institutions like the Perrin Institution allow us to combine lived experience with analytical rigor to produce insights that can drive more equitable policy.}
+
+\textit{We believe the future of evidence-based policy depends on expanding not just who benefits from programs, but who participates in designing and evaluating them. This collaboration demonstrates the power of bringing together established research institutions with organizations focused on expanding access and opportunity.''}
+\end{quote}
+
+\vspace{0.5cm}
+\begin{flushright}
+\textbf{VenturEd Research Team}\\
+VenturEd Global Foundation
+\end{flushright}
+
+\begin{note}
+This report represents the views of the authors and does not necessarily reflect the official position of The Perrin Institution or VenturEd Global. The research was conducted collaboratively with input from both organizations.
+\end{note}
+
+% Bibliography
+\bibliographystyle{aer}
+% Only include bibliography if file exists
+\IfFileExists{references.bib}{%
 \bibliography{references}
+}{%
+\chapter*{References}
+\textit{References will be added when bibliography file is available.}
+}
 
-% --- APPENDIX ---
-% All supplementary material goes after this command.
-\newpage
+% Appendices
 \appendix
-\input{sections/07_appendix.tex}
+\chapter{Mathematical Proofs}
+\section{Proof of Non-identification Theorem}
+[Detailed mathematical proofs of the main theoretical results]
+
+\section{Bounding Derivations}
+[Step-by-step derivation of the sharp bounds under different assumptions]
+
+\chapter{Simulation Code and Results}
+\section{Monte Carlo Simulation Procedures}
+[Detailed description of simulation methodology]
+
+\section{Robustness Checks}
+[Additional simulation results under different parameter values]
+
+\chapter{Data Sources and Methodology}
+\section{Information Intervention Experiments}
+[Description of experimental design and data collection]
+
+\section{Survey Instruments}
+[Questionnaires and measurement tools used]
 
 \end{document}
